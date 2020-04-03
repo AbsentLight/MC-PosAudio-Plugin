@@ -1,0 +1,15 @@
+name: DarkPAS
+version: ${project.version}
+main: xyz.darke.darkpas.DarkPAS
+api-version: "1.15"
+prefix: DarkPAS
+authors: [Absent_Light]
+description: Sends positional audio information to the Teamspeak Clients
+website: darke.xyz
+commands:
+  settsid:
+    description: Connect your Minecraft position to Teamspeak positional audio
+    usage: /setTSID <teamspeakID> [@isOp; playerName]
+  debug:
+    description: Debug
+    usage: /debug
