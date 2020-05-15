@@ -1,36 +1,36 @@
 package xyz.darke.darkpas.util;
 
+import xyz.darke.darkpas.DarkPAS;
+import xyz.darke.darkpas.data.ServerConfig;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 
 public class MathUtil {
 
-
-
-
-    public static double distance2D(final double x1, final double y1, final double x2, final double y2) {
-        double x = x2 - x1;
-        double y = y2 - y1;
-
-        x *= x; // x ** x
-        y *= y; // y ** y
-
-        return Math.sqrt(x + y);
-    }
-
-    public static double angle2D(final double x1, final double y1, final double x2, final double y2, final double mod) {
-        return Math.atan2(x2 - x1, y2 - y1) + mod;
-    }
-
-    public static double distance3D(final double[] p1, final double[] p2) {
-
-        final double a = Math.pow((p2[0] - p1[0]), 2);
-        final double b = Math.pow((p2[1] - p1[1]), 2);
-        final double c = Math.pow((p2[2] - p1[2]), 2);
-
-        return Math.sqrt(a + b + c);
-    }
+//    public static double distance2D(final double x1, final double y1, final double x2, final double y2) {
+//        double x = x2 - x1;
+//        double y = y2 - y1;
+//
+//        x *= x; // x ** x
+//        y *= y; // y ** y
+//
+//        return Math.sqrt(x + y);
+//    }
+//
+//    public static double angle2D(final double x1, final double y1, final double x2, final double y2, final double mod) {
+//        return Math.atan2(x2 - x1, y2 - y1) + mod;
+//    }
+//
+//    public static double distance3D(final double[] p1, final double[] p2) {
+//
+//        final double a = Math.pow((p2[0] - p1[0]), 2);
+//        final double b = Math.pow((p2[1] - p1[1]), 2);
+//        final double c = Math.pow((p2[2] - p1[2]), 2);
+//
+//        return Math.sqrt(a + b + c);
+//    }
 
     public static double[] normalise3D(final double[] p1, final double[] p2) {
         // p1 -> [0] * 3
@@ -85,7 +85,27 @@ public class MathUtil {
         return matrix;
     }
 
-    public static double[][] getRollMatrix() {
+    public static double[][] formRollMatrix(double rollAngle) {
+
+        rollAngle = Math.toRadians(rollAngle);
+
+        double[][] matrix = new double[3][3];
+        matrix[0][0] = 1;
+        matrix[0][1] = 0;
+        matrix[0][2] = 0;
+
+        matrix[1][0] = 0;
+        matrix[1][1] = Math.cos(rollAngle);
+        matrix[1][2] = Math.sin(rollAngle) * -1;
+
+        matrix[2][0] = 0;
+        matrix[2][1] = Math.sin(rollAngle);
+        matrix[2][2] = Math.cos(rollAngle);
+
+        return matrix;
+    }
+
+    public static double[][] getIdentityMatrix() {
         double[][] matrix = new double[3][3];
         matrix[0][0] = 1;
         matrix[0][1] = 0;
@@ -102,6 +122,16 @@ public class MathUtil {
         return matrix;
     }
 
+    public static double[][] getCorrectionMatrix() {
+        double[][] yawMatrix = formYawMatrix(DarkPAS.serverConfig.getModYaw());
+        double[][] pitchMatrix = formPitchMatrix(DarkPAS.serverConfig.getModPitch());
+        double[][] rollMatrix = formRollMatrix(DarkPAS.serverConfig.getModRoll());
+
+        double[][] t = matrixMult(pitchMatrix, rollMatrix);
+
+        return matrixMult(yawMatrix, t);
+    }
+
     public static double[][] formRotationMatrix(double yawAngle, double pitchAngle) {
         double[][] yawRotM = formYawMatrix(yawAngle);
 //        System.out.println("Yaw Matrix");
@@ -111,7 +141,7 @@ public class MathUtil {
 //        System.out.println("Pitch Matrix");
 //        printMatrix(pitchRotM);
 
-        double[][] rollRotM = getRollMatrix();
+        double[][] rollRotM = formRollMatrix(0);
 //        System.out.println("Roll Matrix");
 //        printMatrix(rollRotM);
 
@@ -145,8 +175,8 @@ public class MathUtil {
         double[][] colVector = new double[1][v1.length];
 
         colVector[0][0] = v1[0];
-        colVector[0][1] = v1[2];
-        colVector[0][2] = v1[1];
+        colVector[0][1] = v1[1];
+        colVector[0][2] = v1[2];
 
 //        for (int i=0; i<v1.length; i++) {
 //            colVector[0][i] = v1[i];
@@ -169,17 +199,23 @@ public class MathUtil {
 //        printMatrix(rotationMatrix);
         double[][] newMatrix = MathUtil.matrixMult(MathUtil.colVectorToMatrix(vector), rotationMatrix);
 
-        double[] newVector = new double[vector.length];
+        double[] newVector = colVecMatrixToArray(newMatrix);
 
-        for (int i=0; i<vector.length; i++) {
-            newVector[i] = newMatrix[0][i];
+        return newVector;
+    }
+
+    public static double[] applyPerspective(double yaw, double pitch, double[] vector) {
+        double[] rotatedVector = rotateVector(yaw, pitch, vector);
+        double[][] newMatrix = MathUtil.matrixMult(MathUtil.colVectorToMatrix(rotatedVector), getCorrectionMatrix());
+        return colVecMatrixToArray(newMatrix);
+    }
+
+    private static double[] colVecMatrixToArray(double[][] matrix) {
+        double[] newVector = new double[3];
+
+        for (int i=0; i<3; i++) {
+            newVector[i] = matrix[0][i];
         }
-
-        // Fix YZ Swap (Minecraft has Y vert whereas tradition maths is Z vert)
-        double temp = newVector[1];
-        newVector[1] = newVector[2];
-        newVector[2] = temp;
-
         return newVector;
     }
 

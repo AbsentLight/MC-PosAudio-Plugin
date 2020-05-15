@@ -15,33 +15,29 @@ public class ServerConfig {
 
     private static final String filepath = "plugins/DarkPAS/config.json";
 
-    public int getCutoffDistance() {
-        return cutoffDistance;
-    }
-
-    public int getAttenuationCoefficient() {
-        return attenuationCoefficient;
-    }
-
-    public int getSafeZoneSize() {
-        return safeZoneSize;
-    }
-
     private int cutoffDistance;             // Distance in blocks after which a player cannot be heard
-    private int attenuationCoefficient; // Rate at which volume drops off (after safezone)
+    private int attenuationCoefficient;     // Rate at which volume drops off (after safezone)
     private int safeZoneSize;               // Range where players broadcast at full volume
+    private int modYaw;                     //
+    private int modPitch;                   //
+    private int modRoll;                    //
 
     public ServerConfig () {
         this.cutoffDistance = 64;
         this.attenuationCoefficient = 5;
         this.safeZoneSize = 16;
+        this.modYaw = 0;
+        this.modPitch = 0;
+        this.modRoll = 0;
 
         buildServerConfigFromDisk();
     }
 
     public String getConfigJson() {
-        return String.format("{\"cutoffDistance\":%d,\"attenuationCoefficient\":%d,\"safeZoneSize\":%d}",
-                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize);
+        return String.format("{\"cutoffDistance\":%d,\"attenuationCoefficient\":%d,\"safeZoneSize\":%d," +
+                        "\"modYaw\":%d,\"modPitch\":%d,\"modRoll\":%d}",
+                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize,
+                this.modYaw, this.modPitch, this.modRoll);
     }
 
     public void buildServerConfigFromDisk() {
@@ -82,5 +78,53 @@ public class ServerConfig {
             DarkPAS.log(Level.WARNING, String.format("Failed to write %s to disk", filepath));
             e.printStackTrace();
         }
+    }
+
+    public int getCutoffDistance() {
+        return cutoffDistance;
+    }
+
+    public int getAttenuationCoefficient() {
+        return attenuationCoefficient;
+    }
+
+    public int getSafeZoneSize() {
+        return safeZoneSize;
+    }
+
+    public void setCutoffDistance(int cutoffDistance) {
+        this.cutoffDistance = cutoffDistance;
+    }
+
+    public void setAttenuationCoefficient(int attenuationCoefficient) {
+        this.attenuationCoefficient = attenuationCoefficient;
+    }
+
+    public void setSafeZoneSize(int safeZoneSize) {
+        this.safeZoneSize = safeZoneSize;
+    }
+
+    public int getModYaw() {
+        return modYaw;
+    }
+
+    public void setModYaw(int modYaw) {
+        this.modYaw = modYaw;
+    }
+
+    public int getModPitch() {
+        return modPitch;
+    }
+
+    public void setModPitch(int modPitch) {
+        this.modPitch = modPitch;
+    }
+
+    public int getModRoll() {
+        return modRoll;
+    }
+
+    public void setModRoll(int modRoll) {
+        this.modRoll = modRoll;
     }
 }

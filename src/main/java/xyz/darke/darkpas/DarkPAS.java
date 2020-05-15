@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.darke.darkpas.commands.ConfigCommand;
 import xyz.darke.darkpas.commands.DebugCommand;
 import xyz.darke.darkpas.commands.SetTSID;
 import xyz.darke.darkpas.data.PlayerData;
@@ -76,6 +77,10 @@ public final class DarkPAS extends JavaPlugin {
         if (cmd.getName().equalsIgnoreCase("debug")) {
             return DebugCommand.onCommand(sender, cmd, label, args, playerData);
         }
+
+        if (cmd.getName().equalsIgnoreCase("dpas")) {
+            return ConfigCommand.onCommand(sender, cmd, label, args, serverConfig);
+        }
         return false;
     }
 
@@ -83,6 +88,7 @@ public final class DarkPAS extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         playerData.writePlayerIDMapCache();
+        serverConfig.writeServerConfigToDisk();
         webServer.stop(0);
     }
 

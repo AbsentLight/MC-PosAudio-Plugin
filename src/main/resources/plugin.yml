@@ -13,3 +13,6 @@ commands:
   debug:
     description: Debug
     usage: /debug
+  dpas:
+    description: Set the config
+    usage: /dpas <a> <b> <c>

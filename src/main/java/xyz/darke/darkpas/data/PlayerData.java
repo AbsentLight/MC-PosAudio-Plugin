@@ -109,8 +109,9 @@ public class PlayerData {
                 int x = DarkPAS.serverConfig.getCutoffDistance() * 2;
                 tsIDPosLookup.put(rTsID, new double[]{x,x,x});
             } else {
+                double[] location = MathUtil.applyPerspective(playerLocation.getYaw(), playerLocation.getPitch(),
+                        rPlayerVec);
 
-                double[] location = MathUtil.rotateVector(playerLocation.getYaw(), playerLocation.getPitch(), rPlayerVec);
 
                 tsIDPosLookup.put(rTsID, location);
             }
