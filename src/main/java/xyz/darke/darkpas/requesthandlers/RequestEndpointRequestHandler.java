@@ -7,6 +7,7 @@ import xyz.darke.darkpas.data.PlayerData;
 
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class RequestEndpointRequestHandler extends AbstractRequestHandler {
 
@@ -21,16 +22,10 @@ public class RequestEndpointRequestHandler extends AbstractRequestHandler {
             Map<String, String> queryItems = parseQuery(exchange.getRequestURI().getQuery());
 
             String tsid = queryItems.get("id");
-            String response = null;
-            if (tsid != null) {
-                response = main.playerData.getPlayerRelativePositions(tsid);
-            } else {
-                System.out.println("tsid null");
+            if (tsid == null) {
+                DarkPAS.log(Level.FINE, "RequestEndpointRequestHandler: TSID couldn't be extracted from request");
             }
-            if (response == null) {
-                System.out.println("Response null");
-                response = "{}";
-            }
+            String response = main.playerData.getPlayerRelativePositions(tsid);
 
             Headers headers = exchange.getResponseHeaders();
             headers.add("content-type", "application/json");

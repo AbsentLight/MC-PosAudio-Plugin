@@ -75,14 +75,13 @@ public class PlayerData {
 
     public String getPlayerRelativePositions(String playerTsID) throws JsonProcessingException {
         if (playerTsID == null) {
-            System.out.println("ID Null");
-            return null;
+            return "{}";
         }
 
         Player player = Bukkit.getPlayer(reverse.get(playerTsID));
 
         if (player == null) {
-            System.out.println("reverse player null");
+            DarkPAS.log(Level.FINE, "PlayerData: Reverse Player Lookup Null");
             return null;
         }
 
