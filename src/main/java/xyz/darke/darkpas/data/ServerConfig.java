@@ -19,8 +19,8 @@ public class ServerConfig {
         return cutoffDistance;
     }
 
-    public int getDropOffGradientCoefficient() {
-        return dropOffGradientCoefficient;
+    public int getAttenuationCoefficient() {
+        return attenuationCoefficient;
     }
 
     public int getSafeZoneSize() {
@@ -28,20 +28,20 @@ public class ServerConfig {
     }
 
     private int cutoffDistance;             // Distance in blocks after which a player cannot be heard
-    private int dropOffGradientCoefficient; // Rate at which volume drops off (after safezone)
+    private int attenuationCoefficient; // Rate at which volume drops off (after safezone)
     private int safeZoneSize;               // Range where players broadcast at full volume
 
     public ServerConfig () {
         this.cutoffDistance = 64;
-        this.dropOffGradientCoefficient = 5;
+        this.attenuationCoefficient = 5;
         this.safeZoneSize = 16;
 
         buildServerConfigFromDisk();
     }
 
     public String getConfigJson() {
-        return String.format("{\"cutoffDistance\":%d,\"dropOffGradientCoefficient\":%d,\"safeZoneSize\":%d}",
-                this.cutoffDistance, this.dropOffGradientCoefficient, this.safeZoneSize);
+        return String.format("{\"cutoffDistance\":%d,\"attenuationCoefficient\":%d,\"safeZoneSize\":%d}",
+                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize);
     }
 
     public void buildServerConfigFromDisk() {
@@ -67,7 +67,7 @@ public class ServerConfig {
         }
 
         this.cutoffDistance = ((Double) configItems.get("cutoffDistance")).intValue();
-        this.dropOffGradientCoefficient = ((Double) configItems.get("dropOffGradientCoefficient")).intValue();
+        this.attenuationCoefficient = ((Double) configItems.get("attenuationCoefficient")).intValue();
         this.safeZoneSize = ((Double) configItems.get("safeZoneSize")).intValue();
 
     }

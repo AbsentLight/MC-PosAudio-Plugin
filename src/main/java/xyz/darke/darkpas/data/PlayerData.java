@@ -111,14 +111,8 @@ public class PlayerData {
                 tsIDPosLookup.put(rTsID, new double[]{x,x,x});
             } else {
 
-                double[][] playerRotMatrix = MathUtil.formRotationMatrix(playerLocation.getYaw(), playerLocation.getPitch());
-                double[][] rPlayerRelPos   = MathUtil.matrixMult(MathUtil.colVectorToMatrix(rPlayerVec), playerRotMatrix);
+                double[] location = MathUtil.rotateVector(playerLocation.getYaw(), playerLocation.getPitch(), rPlayerVec);
 
-
-                double[] location = new double[3];
-                location[0] = rPlayerRelPos[0][0];
-                location[1] = rPlayerRelPos[0][1];
-                location[2] = rPlayerRelPos[0][2];
                 tsIDPosLookup.put(rTsID, location);
             }
         }

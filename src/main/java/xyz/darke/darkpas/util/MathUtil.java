@@ -1,5 +1,9 @@
 package xyz.darke.darkpas.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
+
 public class MathUtil {
 
 
@@ -100,10 +104,20 @@ public class MathUtil {
 
     public static double[][] formRotationMatrix(double yawAngle, double pitchAngle) {
         double[][] yawRotM = formYawMatrix(yawAngle);
-        double[][] pitchRotM = formPitchMatrix(pitchAngle);
-        double[][] rollRotM = getRollMatrix();
+//        System.out.println("Yaw Matrix");
+//        printMatrix(yawRotM);
 
-        double[][] tempM = matrixMult(pitchRotM,rollRotM);
+        double[][] pitchRotM = formPitchMatrix(pitchAngle);
+//        System.out.println("Pitch Matrix");
+//        printMatrix(pitchRotM);
+
+        double[][] rollRotM = getRollMatrix();
+//        System.out.println("Roll Matrix");
+//        printMatrix(rollRotM);
+
+        double[][] tempM = matrixMult(pitchRotM, rollRotM);
+//        System.out.println("Pitch*Roll Matrix");
+//        printMatrix(tempM);
         return  matrixMult(yawRotM, tempM);
     }
 
@@ -129,14 +143,59 @@ public class MathUtil {
 
     public static double[][] colVectorToMatrix(double[] v1) {
         double[][] colVector = new double[1][v1.length];
-        for (int i=0; i<v1.length; i++) {
-            colVector[0][i] = v1[i];
-        }
+
+        colVector[0][0] = v1[0];
+        colVector[0][1] = v1[2];
+        colVector[0][2] = v1[1];
+
+//        for (int i=0; i<v1.length; i++) {
+//            colVector[0][i] = v1[i];
+//        }
         return colVector;
     }
 
     public static double vectorMagnitude(double[] v1) {
         return Math.sqrt(Math.pow(v1[0],2) + Math.pow(v1[1],2) + Math.pow(v1[2],2));
+    }
+
+    public static double simplifyDouble(double val) {
+        BigDecimal d = BigDecimal.valueOf(val).setScale(2, RoundingMode.HALF_UP);
+        return d.doubleValue();
+    }
+
+    public static double[] rotateVector(double yaw, double pitch, double[] vector) {
+        double[][] rotationMatrix  = MathUtil.formRotationMatrix(yaw, pitch);
+//        System.out.println("Rotation Matrix");
+//        printMatrix(rotationMatrix);
+        double[][] newMatrix = MathUtil.matrixMult(MathUtil.colVectorToMatrix(vector), rotationMatrix);
+
+        double[] newVector = new double[vector.length];
+
+        for (int i=0; i<vector.length; i++) {
+            newVector[i] = newMatrix[0][i];
+        }
+
+        // Fix YZ Swap (Minecraft has Y vert whereas tradition maths is Z vert)
+        double temp = newVector[1];
+        newVector[1] = newVector[2];
+        newVector[2] = temp;
+
+        return newVector;
+    }
+
+    public static void printMatrix(double[][] matrix) {
+
+        double[][] simplified = new double[3][3];
+
+        for (int r=0; r<3; r++) {
+            for (int c=0; c<3; c++) {
+                simplified[r][c] = simplifyDouble(matrix[r][c]);
+            }
+        }
+
+        System.out.println("[" + Arrays.toString(simplified[0]));
+        System.out.println(" " + Arrays.toString(simplified[1]));
+        System.out.println(" " + Arrays.toString(simplified[2]) + "]");
     }
 
 }
