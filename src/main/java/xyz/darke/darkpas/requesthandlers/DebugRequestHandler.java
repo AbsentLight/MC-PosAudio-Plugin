@@ -3,6 +3,7 @@ package xyz.darke.darkpas.requesthandlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sun.net.httpserver.HttpExchange;
+import xyz.darke.darkpas.DarkPAS;
 import xyz.darke.darkpas.data.PlayerData;
 
 import java.io.OutputStream;
@@ -11,8 +12,8 @@ import java.util.List;
 
 public class DebugRequestHandler extends AbstractRequestHandler {
 
-    public DebugRequestHandler(PlayerData playerData) {
-        super(playerData);
+    public DebugRequestHandler(DarkPAS main) {
+        super(main);
     }
 
     @Override
@@ -24,10 +25,10 @@ public class DebugRequestHandler extends AbstractRequestHandler {
 
             List<String> responseData = new ArrayList<>();
 
-            responseData.add(objectMapper.writeValueAsString(playerData.data));
-            responseData.add(objectMapper.writeValueAsString(playerData.reverse));
-            responseData.add(playerData.getPlayerPositions());
-            responseData.add(playerData.getPlayerRelativePositions("XrwhZkGd1RFrnU78oyFDeR855bo="));
+            responseData.add(objectMapper.writeValueAsString(main.playerData.data));
+            responseData.add(objectMapper.writeValueAsString(main.playerData.reverse));
+            responseData.add(main.playerData.getPlayerPositions());
+            responseData.add(main.playerData.getPlayerRelativePositions("XrwhZkGd1RFrnU78oyFDeR855bo="));
 
             String response = String.join(" <br> ", responseData);
 

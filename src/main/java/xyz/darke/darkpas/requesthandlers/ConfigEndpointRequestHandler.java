@@ -5,32 +5,21 @@ import com.sun.net.httpserver.HttpExchange;
 import xyz.darke.darkpas.DarkPAS;
 import xyz.darke.darkpas.data.PlayerData;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
-public class RequestEndpointRequestHandler extends AbstractRequestHandler {
+public class ConfigEndpointRequestHandler extends AbstractRequestHandler {
 
-    public RequestEndpointRequestHandler(DarkPAS main) {
+    public ConfigEndpointRequestHandler(DarkPAS main) {
         super(main);
     }
 
     @Override
     public void handle(HttpExchange exchange) {
-
         try {
-            Map<String, String> queryItems = parseQuery(exchange.getRequestURI().getQuery());
 
-            String tsid = queryItems.get("id");
-            String response = null;
-            if (tsid != null) {
-                response = main.playerData.getPlayerRelativePositions(tsid);
-            } else {
-                System.out.println("tsid null");
-            }
-            if (response == null) {
-                System.out.println("Response null");
-                response = "{}";
-            }
+            String response = main.serverConfig.getConfigJson();
 
             Headers headers = exchange.getResponseHeaders();
             headers.add("content-type", "application/json");

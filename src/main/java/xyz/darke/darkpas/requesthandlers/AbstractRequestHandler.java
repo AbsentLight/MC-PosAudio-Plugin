@@ -1,6 +1,7 @@
 package xyz.darke.darkpas.requesthandlers;
 
 import com.sun.net.httpserver.HttpHandler;
+import xyz.darke.darkpas.DarkPAS;
 import xyz.darke.darkpas.data.PlayerData;
 
 import java.util.HashMap;
@@ -8,10 +9,10 @@ import java.util.Map;
 
 public abstract class AbstractRequestHandler implements HttpHandler {
 
-    protected final PlayerData playerData;
+    protected final DarkPAS main;
 
-    public AbstractRequestHandler(PlayerData playerData) {
-        this.playerData = playerData;
+    public AbstractRequestHandler(DarkPAS main) {
+        this.main = main;
     }
 
     public static Map<String, String> parseQuery(String queryString) {
