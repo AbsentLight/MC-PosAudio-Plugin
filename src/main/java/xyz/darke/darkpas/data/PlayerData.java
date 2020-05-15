@@ -82,7 +82,7 @@ public class PlayerData {
 
         if (player == null) {
             DarkPAS.log(Level.FINE, "PlayerData: Reverse Player Lookup Null");
-            return null;
+            return "{}";
         }
 
         Collection<? extends Player> playerList = Bukkit.getOnlinePlayers();
