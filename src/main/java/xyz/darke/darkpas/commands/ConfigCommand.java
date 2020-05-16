@@ -44,22 +44,6 @@ public class ConfigCommand {
             return;
         }
 
-        if (args.length == 6) {
-            try {
-                config.setSafeZoneSize(Integer.parseInt(args[0]));
-                config.setAttenuationCoefficient(Integer.parseInt(args[1]));
-                config.setCutoffDistance(Integer.parseInt(args[2]));
-                config.setModYaw(Integer.parseInt(args[3]));
-                config.setModPitch(Integer.parseInt(args[4]));
-                config.setModRoll(Integer.parseInt(args[5]));
-            } catch (Exception e) {
-                sender.sendMessage(Color.RED + "Failed to set values!");
-                return;
-            }
-            sender.sendMessage(ChatColor.GREEN + "" +  ChatColor.ITALIC + "Config updated!");
-            return;
-        }
-
         sender.sendMessage("/dpas <SafeZoneSize> <AttenuationCoefficient> <CutoffDistance> [<yaw> <pitch> <roll>]");
     }
 

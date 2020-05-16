@@ -26,18 +26,13 @@ public class ServerConfig {
         this.cutoffDistance = 64;
         this.attenuationCoefficient = 5;
         this.safeZoneSize = 16;
-        this.modYaw = 0;
-        this.modPitch = 0;
-        this.modRoll = 0;
 
         buildServerConfigFromDisk();
     }
 
     public String getConfigJson() {
-        return String.format("{\"cutoffDistance\":%d,\"attenuationCoefficient\":%d,\"safeZoneSize\":%d," +
-                        "\"modYaw\":%d,\"modPitch\":%d,\"modRoll\":%d}",
-                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize,
-                this.modYaw, this.modPitch, this.modRoll);
+        return String.format("{\"cutoffDistance\":%d,\"attenuationCoefficient\":%d,\"safeZoneSize\":%d}",
+                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize);
     }
 
     public void buildServerConfigFromDisk() {
@@ -104,27 +99,4 @@ public class ServerConfig {
         this.safeZoneSize = safeZoneSize;
     }
 
-    public int getModYaw() {
-        return modYaw;
-    }
-
-    public void setModYaw(int modYaw) {
-        this.modYaw = modYaw;
-    }
-
-    public int getModPitch() {
-        return modPitch;
-    }
-
-    public void setModPitch(int modPitch) {
-        this.modPitch = modPitch;
-    }
-
-    public int getModRoll() {
-        return modRoll;
-    }
-
-    public void setModRoll(int modRoll) {
-        this.modRoll = modRoll;
-    }
 }
