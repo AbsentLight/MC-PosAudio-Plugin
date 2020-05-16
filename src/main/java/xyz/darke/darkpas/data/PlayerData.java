@@ -90,7 +90,10 @@ public class PlayerData {
         Map<String, double[]> tsIDPosLookup = new HashMap<>();
 
         Location playerLocation = player.getLocation();
-        tsIDPosLookup.put(playerTsID, new double[]{0.0, 0.0, 0.0, 0.0});
+        tsIDPosLookup.put(playerTsID, new double[]{0.0, 0.0, 0.0,
+                MathUtil.simplifyDouble(playerLocation.getPitch(),3),
+                MathUtil.simplifyDouble(playerLocation.getYaw(), 3)
+        });
 
         for (Player rPlayer : playerList) {
             if (rPlayer.getUniqueId() == player.getUniqueId()) {
@@ -109,11 +112,7 @@ public class PlayerData {
                 int x = DarkPAS.serverConfig.getCutoffDistance() * 2;
                 tsIDPosLookup.put(rTsID, new double[]{x,x,x});
             } else {
-                double[] location = MathUtil.applyPerspective(playerLocation.getYaw(), playerLocation.getPitch(),
-                        rPlayerVec);
-
-
-                tsIDPosLookup.put(rTsID, location);
+                tsIDPosLookup.put(rTsID, rPlayerVec);
             }
         }
 
