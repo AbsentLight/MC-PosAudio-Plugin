@@ -91,8 +91,8 @@ public class PlayerData {
 
         Location playerLocation = player.getLocation();
         tsIDPosLookup.put(playerTsID, new double[]{0.0, 0.0, 0.0,
-                MathUtil.simplifyDouble(playerLocation.getPitch(),3),
-                MathUtil.simplifyDouble(playerLocation.getYaw(), 3)
+                MathUtil.simplifyDouble(Math.toRadians(playerLocation.getPitch()),3),
+                MathUtil.simplifyDouble(Math.toRadians(playerLocation.getYaw()), 3)
         });
 
         for (Player rPlayer : playerList) {
