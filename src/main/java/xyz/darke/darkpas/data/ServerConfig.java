@@ -61,10 +61,14 @@ public class ServerConfig {
             e.printStackTrace();
         }
 
-        this.cutoffDistance = ((Double) configItems.get("cutoffDistance")).intValue();
-        this.attenuationCoefficient = ((Double) configItems.get("attenuationCoefficient")).intValue();
-        this.safeZoneSize = ((Double) configItems.get("safeZoneSize")).intValue();
-        this.unregisteredCanBroadcast = (boolean) configItems.get("unregisteredCanBroadcast");
+        try {
+            this.cutoffDistance = ((Double) configItems.get("cutoffDistance")).intValue();
+            this.attenuationCoefficient = ((Double) configItems.get("attenuationCoefficient")).intValue();
+            this.safeZoneSize = ((Double) configItems.get("safeZoneSize")).intValue();
+            this.unregisteredCanBroadcast = (boolean) configItems.get("unregisteredCanBroadcast");
+        } catch (Exception e) {
+            DarkPAS.log(Level.WARNING, "Failed to parse config data from disk");
+        }
     }
 
     public void writeServerConfigToDisk() {
