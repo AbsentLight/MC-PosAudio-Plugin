@@ -33,8 +33,8 @@ public class ServerConfig {
     public String getConfigJson() {
         return String.format("{\"cutoffDistance\":%d," +
                              "\"attenuationCoefficient\":%d," +
-                             "\"safeZoneSize\":%d}",
-                             "\"unregisteredCanBroadcast\":\"%s\"",
+                             "\"safeZoneSize\":%d," +
+                             "\"unregisteredCanBroadcast\":%s}",
                 this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize,
                 this.unregisteredCanBroadcast ? "true" : "false");
     }
