@@ -50,9 +50,9 @@ public class ConfigCommand {
                 config.setAttenuationCoefficient(Integer.parseInt(args[1]));
                 config.setCutoffDistance(Integer.parseInt(args[2]));
 
-                if (args[2].equalsIgnoreCase("true")) {
+                if (args[3].equalsIgnoreCase("true")) {
                     config.setUnregisteredCanBroadcast(true);
-                } else if (args[2].equalsIgnoreCase("false")) {
+                } else if (args[3].equalsIgnoreCase("false")) {
                     config.setUnregisteredCanBroadcast(false);
                 } else {
                     config.setUnregisteredCanBroadcast(true);
