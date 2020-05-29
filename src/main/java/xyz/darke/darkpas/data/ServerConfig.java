@@ -15,24 +15,28 @@ public class ServerConfig {
 
     private static final String filepath = "plugins/DarkPAS/config.json";
 
-    private int cutoffDistance;             // Distance in blocks after which a player cannot be heard
-    private int attenuationCoefficient;     // Rate at which volume drops off (after safezone)
-    private int safeZoneSize;               // Range where players broadcast at full volume
-    private int modYaw;                     //
-    private int modPitch;                   //
-    private int modRoll;                    //
+    private int cutoffDistance;                 // Distance in blocks after which a player cannot be heard
+    private int attenuationCoefficient;         // Rate at which volume drops off (after safe-zone)
+    private int safeZoneSize;                   // Range where players broadcast at full volume
+
+    private boolean unregisteredCanBroadcast;   // If players aren't registered, do they get heard
 
     public ServerConfig () {
         this.cutoffDistance = 64;
         this.attenuationCoefficient = 5;
         this.safeZoneSize = 16;
+        this.unregisteredCanBroadcast = true;
 
         buildServerConfigFromDisk();
     }
 
     public String getConfigJson() {
-        return String.format("{\"cutoffDistance\":%d,\"attenuationCoefficient\":%d,\"safeZoneSize\":%d}",
-                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize);
+        return String.format("{\"cutoffDistance\":%d," +
+                             "\"attenuationCoefficient\":%d," +
+                             "\"safeZoneSize\":%d}",
+                             "\"unregisteredCanBroadcast\":\"%s\"",
+                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize,
+                this.unregisteredCanBroadcast ? "true" : "false");
     }
 
     public void buildServerConfigFromDisk() {
@@ -60,7 +64,7 @@ public class ServerConfig {
         this.cutoffDistance = ((Double) configItems.get("cutoffDistance")).intValue();
         this.attenuationCoefficient = ((Double) configItems.get("attenuationCoefficient")).intValue();
         this.safeZoneSize = ((Double) configItems.get("safeZoneSize")).intValue();
-
+        this.unregisteredCanBroadcast = (boolean) configItems.get("unregisteredCanBroadcast");
     }
 
     public void writeServerConfigToDisk() {
@@ -97,6 +101,14 @@ public class ServerConfig {
 
     public void setSafeZoneSize(int safeZoneSize) {
         this.safeZoneSize = safeZoneSize;
+    }
+
+    public boolean isUnregisteredCanBroadcast() {
+        return unregisteredCanBroadcast;
+    }
+
+    public void setUnregisteredCanBroadcast(boolean unregisteredCanBroadcast) {
+        this.unregisteredCanBroadcast = unregisteredCanBroadcast;
     }
 
 }

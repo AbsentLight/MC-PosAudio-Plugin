@@ -37,14 +37,36 @@ public class ConfigCommand {
                 config.setAttenuationCoefficient(Integer.parseInt(args[1]));
                 config.setCutoffDistance(Integer.parseInt(args[2]));
             } catch (Exception e) {
-                sender.sendMessage(Color.RED + "Failed to set values!");
+                sender.sendMessage(ChatColor.RED + "Failed to set values!");
                 return;
             }
             sender.sendMessage(ChatColor.GREEN + "" +  ChatColor.ITALIC + "Config updated!");
             return;
         }
 
-        sender.sendMessage("/dpas <SafeZoneSize> <AttenuationCoefficient> <CutoffDistance> [<yaw> <pitch> <roll>]");
+        if (args.length == 4) {
+            try {
+                config.setSafeZoneSize(Integer.parseInt(args[0]));
+                config.setAttenuationCoefficient(Integer.parseInt(args[1]));
+                config.setCutoffDistance(Integer.parseInt(args[2]));
+
+                if (args[2].equalsIgnoreCase("true")) {
+                    config.setUnregisteredCanBroadcast(true);
+                } else if (args[2].equalsIgnoreCase("false")) {
+                    config.setUnregisteredCanBroadcast(false);
+                } else {
+                    config.setUnregisteredCanBroadcast(true);
+                    sender.sendMessage(ChatColor.YELLOW + "Unknown value for <unregisteredBroadcast>, defaulting true");
+                }
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "Failed to set values!");
+                return;
+            }
+            sender.sendMessage(ChatColor.GREEN + "" +  ChatColor.ITALIC + "Config updated!");
+            return;
+        }
+
+        sender.sendMessage("/dpas <SafeZoneSize> <AttenuationCoefficient> <CutoffDistance> <unregisteredBroadcast>");
     }
 
 }
