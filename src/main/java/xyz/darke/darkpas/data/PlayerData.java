@@ -3,6 +3,7 @@ package xyz.darke.darkpas.data;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
@@ -16,7 +17,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PlayerData {
 
@@ -87,13 +87,32 @@ public class PlayerData {
 
         Collection<? extends Player> playerList = Bukkit.getOnlinePlayers();
 
-        Map<String, double[]> tsIDPosLookup = new HashMap<>();
+
 
         Location playerLocation = player.getLocation();
-        tsIDPosLookup.put(playerTsID, new double[]{0.0, 0.0, 0.0,
-                MathUtil.simplifyDouble(Math.toRadians(playerLocation.getPitch()),3),
-                MathUtil.simplifyDouble(Math.toRadians(playerLocation.getYaw()), 3)
-        });
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        ObjectNode tsIDPosLookup = objectMapper.createObjectNode();
+        ObjectNode localPlayerData = objectMapper.createObjectNode();
+        ObjectNode localPlayerPos = objectMapper.createObjectNode();
+        localPlayerPos.put("x", 0.0f);
+        localPlayerPos.put("y", 0.0f);
+        localPlayerPos.put("z", 0.0f);
+        localPlayerData.set("pos", localPlayerPos);
+
+        ObjectNode localPlayerRot = objectMapper.createObjectNode();
+        localPlayerRot.put("yaw", MathUtil.simplifyDouble(Math.toRadians(playerLocation.getYaw()), 3));
+        localPlayerRot.put("pitch", MathUtil.simplifyDouble(Math.toRadians(playerLocation.getPitch()),3));
+        localPlayerData.set("rot", localPlayerRot);
+
+        ObjectNode localPlayerChannel = objectMapper.createObjectNode();
+        localPlayerChannel.put("id", playerToChannelID(player));
+        localPlayerChannel.put("mode", playerToChannelMode(player));
+        localPlayerData.set("channel", localPlayerChannel);
+
+        tsIDPosLookup.set(playerTsID, localPlayerData);
 
         for (Player rPlayer : playerList) {
             if (rPlayer.getUniqueId() == player.getUniqueId()) {
@@ -110,17 +129,36 @@ public class PlayerData {
 
             if (MathUtil.vectorMagnitude(rPlayerVec) > DarkPAS.serverConfig.getCutoffDistance()) {
                 int x = DarkPAS.serverConfig.getCutoffDistance() * 2;
-                tsIDPosLookup.put(rTsID, new double[]{x,x,x});
+                ObjectNode rPlayerData = objectMapper.createObjectNode();
+                ObjectNode rPlayerPos = objectMapper.createObjectNode();
+                rPlayerPos.put("x", DarkPAS.serverConfig.getCutoffDistance() * 2);
+                rPlayerPos.put("y", DarkPAS.serverConfig.getCutoffDistance() * 2);
+                rPlayerPos.put("z", DarkPAS.serverConfig.getCutoffDistance() * 2);
+                rPlayerData.set("pos", rPlayerPos);
+                ObjectNode rPlayerChannel = objectMapper.createObjectNode();
+                rPlayerChannel.put("id", playerToChannelID(rPlayer));
+                rPlayerChannel.put("mode", playerToChannelMode(rPlayer));
+                rPlayerData.set("channel", rPlayerChannel);
+
+                tsIDPosLookup.set(rTsID, rPlayerData);
             } else {
-                tsIDPosLookup.put(rTsID, rPlayerVec);
+                ObjectNode rPlayerData = objectMapper.createObjectNode();
+                ObjectNode rPlayerPos = objectMapper.createObjectNode();
+                rPlayerPos.put("x", rPlayerVec[0]);
+                rPlayerPos.put("y", rPlayerVec[1]);
+                rPlayerPos.put("z", rPlayerVec[2]);
+                rPlayerData.set("pos", rPlayerPos);
+                ObjectNode rPlayerChannel = objectMapper.createObjectNode();
+                rPlayerChannel.put("id", playerToChannelID(rPlayer));
+                rPlayerChannel.put("mode", playerToChannelMode(rPlayer));
+                rPlayerData.set("channel", rPlayerChannel);
+
+                tsIDPosLookup.set(rTsID, rPlayerData);
             }
         }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
         if (tsIDPosLookup.size() > 0) {
-            return objectMapper.writeValueAsString(tsIDPosLookup);
+            return tsIDPosLookup.toString();
         } else {
             return "{}";
         }
@@ -178,5 +216,36 @@ public class PlayerData {
             DarkPAS.log(Level.WARNING, String.format("Failed to write %s to disk", filepath));
             e.printStackTrace();
         }
+    }
+
+    private int playerToChannelID(Player player) {
+        int channelID = 0;
+        switch (player.getGameMode()) {
+            case SPECTATOR:
+            case CREATIVE:
+                channelID = 1;
+                break;
+            case SURVIVAL:
+            case ADVENTURE:
+                channelID = 0;
+                break;
+        }
+        return channelID;
+    }
+
+    private String playerToChannelMode(Player player) {
+        String channelType = "local";
+
+        switch (player.getGameMode()) {
+            case SPECTATOR:
+            case CREATIVE:
+                channelType = "global";
+                break;
+            case SURVIVAL:
+            case ADVENTURE:
+                channelType = "local";
+                break;
+        }
+        return channelType;
     }
 }
