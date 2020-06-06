@@ -87,8 +87,6 @@ public class PlayerData {
 
         Collection<? extends Player> playerList = Bukkit.getOnlinePlayers();
 
-
-
         Location playerLocation = player.getLocation();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -120,6 +118,10 @@ public class PlayerData {
             }
 
             final String rTsID = data.get(rPlayer.getUniqueId());
+            if (rTsID == null) {
+                continue;
+            }
+
             final Location rPlayerLocation = rPlayer.getLocation();
 
             double[]  playerVec = new double[]{ playerLocation.getX(),  playerLocation.getY(),  playerLocation.getZ()};
