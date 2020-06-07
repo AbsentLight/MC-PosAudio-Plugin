@@ -24,23 +24,23 @@ import java.util.logging.Logger;
 
 public final class DarkPAS extends JavaPlugin {
 
-    public final PlayerData playerData = new PlayerData();
-    public static ServerConfig serverConfig;
-
     protected HttpServer webServer;
     private static final Logger logger = Bukkit.getLogger();
+
     private int portNumber = 9000;
     private boolean hasPort = false;
-    private final RootRequestHandler rootHandler = new RootRequestHandler(this);
-    private final RequestEndpointRequestHandler endpointHandler = new RequestEndpointRequestHandler(this);
-    private final DebugRequestHandler debugHandler = new DebugRequestHandler(this);
-    private final ConfigEndpointRequestHandler configHandler = new ConfigEndpointRequestHandler(this);
+
+    public final static PlayerData playerData = new PlayerData();
+    public final static ServerConfig serverConfig = new ServerConfig();
+
+    private final RootRequestHandler rootHandler = new RootRequestHandler();
+    private final RequestEndpointRequestHandler endpointHandler = new RequestEndpointRequestHandler();
+    private final DebugRequestHandler debugHandler = new DebugRequestHandler();
+    private final ConfigEndpointRequestHandler configHandler = new ConfigEndpointRequestHandler();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
-
-        serverConfig = new ServerConfig();
 
         // Read configuration from file
         setupPluginFolder();
@@ -60,6 +60,10 @@ public final class DarkPAS extends JavaPlugin {
             throw new RuntimeException(String.format("Failed to bind to port %s for communications!", portNumber - 1));
         }
 
+        ConfigCommand configCommand = new ConfigCommand();
+        this.getCommand("dpas").setExecutor(configCommand);
+        this.getCommand("dpas").setTabCompleter(configCommand);
+
         webServer.createContext("/", rootHandler);
         webServer.createContext("/request", endpointHandler);
         webServer.createContext("/debug", debugHandler);
@@ -76,10 +80,6 @@ public final class DarkPAS extends JavaPlugin {
 
         if (cmd.getName().equalsIgnoreCase("debug")) {
             return DebugCommand.onCommand(sender, cmd, label, args, playerData);
-        }
-
-        if (cmd.getName().equalsIgnoreCase("dpas")) {
-            return ConfigCommand.onCommand(sender, cmd, label, args, serverConfig);
         }
         return false;
     }
@@ -104,6 +104,6 @@ public final class DarkPAS extends JavaPlugin {
 
     public static void log(Level level, String msg) {
         String prefix = "[DarkPAS] ";
-        logger.log(level, prefix + msg);
+        DarkPAS.logger.log(level, prefix + msg);
     }
 }

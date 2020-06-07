@@ -11,10 +11,6 @@ import java.util.logging.Level;
 
 public class RequestEndpointRequestHandler extends AbstractRequestHandler {
 
-    public RequestEndpointRequestHandler(DarkPAS main) {
-        super(main);
-    }
-
     @Override
     public void handle(HttpExchange exchange) {
 
@@ -25,7 +21,7 @@ public class RequestEndpointRequestHandler extends AbstractRequestHandler {
             if (tsid == null) {
                 DarkPAS.log(Level.FINE, "RequestEndpointRequestHandler: TSID couldn't be extracted from request");
             }
-            String response = main.playerData.getPlayerRelativePositions(tsid);
+            String response = DarkPAS.playerData.getPlayerRelativePositions(tsid);
 
             Headers headers = exchange.getResponseHeaders();
             headers.add("content-type", "application/json");

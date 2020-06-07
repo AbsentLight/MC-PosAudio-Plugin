@@ -12,10 +12,6 @@ import java.util.List;
 
 public class DebugRequestHandler extends AbstractRequestHandler {
 
-    public DebugRequestHandler(DarkPAS main) {
-        super(main);
-    }
-
     @Override
     public void handle(HttpExchange exchange) {
         try {
@@ -25,10 +21,8 @@ public class DebugRequestHandler extends AbstractRequestHandler {
 
             List<String> responseData = new ArrayList<>();
 
-            responseData.add(objectMapper.writeValueAsString(main.playerData.data));
-            responseData.add(objectMapper.writeValueAsString(main.playerData.reverse));
-            responseData.add(main.playerData.getPlayerPositions());
-            responseData.add(main.playerData.getPlayerRelativePositions("XrwhZkGd1RFrnU78oyFDeR855bo="));
+            responseData.add(objectMapper.writeValueAsString(DarkPAS.playerData.data));
+            responseData.add(objectMapper.writeValueAsString(DarkPAS.playerData.reverse));
 
             String response = String.join(" <br> ", responseData);
 

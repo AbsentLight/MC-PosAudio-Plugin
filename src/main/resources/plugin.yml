@@ -15,4 +15,4 @@ commands:
     usage: /debug
   dpas:
     description: Set the config
-    usage: /dpas <a> <b> <c>
+    usage: /dpas <SafeZoneSize|AttenuationCoefficient|CutoffDistance|unregisteredBroadcast> <...>

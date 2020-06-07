@@ -11,15 +11,11 @@ import java.util.Map;
 
 public class ConfigEndpointRequestHandler extends AbstractRequestHandler {
 
-    public ConfigEndpointRequestHandler(DarkPAS main) {
-        super(main);
-    }
-
     @Override
     public void handle(HttpExchange exchange) {
         try {
 
-            String response = main.serverConfig.getConfigJson();
+            String response = DarkPAS.serverConfig.getConfigJson();
 
             Headers headers = exchange.getResponseHeaders();
             headers.add("content-type", "application/json");

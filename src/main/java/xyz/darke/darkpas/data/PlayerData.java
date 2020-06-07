@@ -22,17 +22,13 @@ public class PlayerData {
 
     private static final String filepath = "plugins/DarkPAS/player_data.json";
 
+    public Map<UUID, Boolean> playerConfigInvalidate = new HashMap<>();
+
     public Map<UUID, String> data = new HashMap<>();
     public Map<String, UUID> reverse = new HashMap<>();
 
     public void addUserInfo(Player player, String tsID) {
-        if (data.containsKey(player.getUniqueId())) {
-            String oldTsID = data.get(player.getUniqueId());
-            reverse.remove(oldTsID);
-        }
-
-        data.put(player.getUniqueId(), tsID);
-        reverse.put(tsID, player.getUniqueId());
+        addUserInfo(player.getUniqueId(),  tsID);
     }
 
     public void addUserInfo(UUID uuid, String tsID) {
@@ -43,34 +39,7 @@ public class PlayerData {
 
         data.put(uuid, tsID);
         reverse.put(tsID, uuid);
-    }
-
-    public String getPlayerPositions() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        Collection<? extends Player> playerList = Bukkit.getOnlinePlayers();
-
-        Map<String, double[]> tsIDPosLookup = new HashMap<>();
-
-        for (Player player : playerList) {
-            String tsID = data.get(player.getUniqueId());
-            Location playerLocation = player.getLocation();
-
-            double[] location = new double[3];
-            location[0] = playerLocation.getX();
-            location[1] = playerLocation.getY();
-            location[2] = playerLocation.getZ();
-
-            tsIDPosLookup.put(tsID, location);
-        }
-
-        if (tsIDPosLookup.size() > 0) {
-            return objectMapper.writeValueAsString(tsIDPosLookup);
-        } else {
-            return "{}";
-        }
-
+        playerConfigInvalidate.put(uuid, true);
     }
 
     public String getPlayerRelativePositions(String playerTsID) throws JsonProcessingException {
@@ -93,6 +62,8 @@ public class PlayerData {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         ObjectNode tsIDPosLookup = objectMapper.createObjectNode();
+        ObjectNode playerData = objectMapper.createObjectNode();
+
         ObjectNode localPlayerData = objectMapper.createObjectNode();
         ObjectNode localPlayerPos = objectMapper.createObjectNode();
         localPlayerPos.put("x", 0.0f);
@@ -101,16 +72,15 @@ public class PlayerData {
         localPlayerData.set("pos", localPlayerPos);
 
         ObjectNode localPlayerRot = objectMapper.createObjectNode();
-        localPlayerRot.put("yaw", MathUtil.simplifyDouble(Math.toRadians(playerLocation.getYaw()), 3));
-        localPlayerRot.put("pitch", MathUtil.simplifyDouble(Math.toRadians(playerLocation.getPitch()),3));
+        localPlayerRot.put("y", MathUtil.simplifyDouble(Math.toRadians(playerLocation.getYaw()), 3));
         localPlayerData.set("rot", localPlayerRot);
 
         ObjectNode localPlayerChannel = objectMapper.createObjectNode();
         localPlayerChannel.put("id", playerToChannelID(player));
         localPlayerChannel.put("mode", playerToChannelMode(player));
-        localPlayerData.set("channel", localPlayerChannel);
+        localPlayerData.set("ch", localPlayerChannel);
 
-        tsIDPosLookup.set(playerTsID, localPlayerData);
+        playerData.set(playerTsID, localPlayerData);
 
         for (Player rPlayer : playerList) {
             if (rPlayer.getUniqueId() == player.getUniqueId()) {
@@ -140,9 +110,9 @@ public class PlayerData {
                 ObjectNode rPlayerChannel = objectMapper.createObjectNode();
                 rPlayerChannel.put("id", playerToChannelID(rPlayer));
                 rPlayerChannel.put("mode", playerToChannelMode(rPlayer));
-                rPlayerData.set("channel", rPlayerChannel);
+                rPlayerData.set("ch", rPlayerChannel);
 
-                tsIDPosLookup.set(rTsID, rPlayerData);
+                playerData.set(rTsID, rPlayerData);
             } else {
                 ObjectNode rPlayerData = objectMapper.createObjectNode();
                 ObjectNode rPlayerPos = objectMapper.createObjectNode();
@@ -153,16 +123,28 @@ public class PlayerData {
                 ObjectNode rPlayerChannel = objectMapper.createObjectNode();
                 rPlayerChannel.put("id", playerToChannelID(rPlayer));
                 rPlayerChannel.put("mode", playerToChannelMode(rPlayer));
-                rPlayerData.set("channel", rPlayerChannel);
+                rPlayerData.set("ch", rPlayerChannel);
 
-                tsIDPosLookup.set(rTsID, rPlayerData);
+                playerData.set(rTsID, rPlayerData);
             }
         }
+
+        ObjectNode flags = objectMapper.createObjectNode();
+        flags.put("hasConfigUpdate", playerConfigInvalidate.get(player.getUniqueId()));
+        playerConfigInvalidate.put(player.getUniqueId(), false);
+        tsIDPosLookup.set("flags", flags);
+        tsIDPosLookup.set("players", playerData);
 
         if (tsIDPosLookup.size() > 0) {
             return tsIDPosLookup.toString();
         } else {
             return "{}";
+        }
+    }
+
+    public void invalidateConfig() {
+        for (UUID key : playerConfigInvalidate.keySet()) {
+            playerConfigInvalidate.put(key, true);
         }
     }
 

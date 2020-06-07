@@ -10,13 +10,9 @@ import java.io.OutputStream;
 
 public class RootRequestHandler extends AbstractRequestHandler {
 
-    public RootRequestHandler(DarkPAS main) {
-        super(main);
-    }
-
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String response = main.playerData.getPlayerPositions();
+        String response = "";
         Headers headers = exchange.getResponseHeaders();
         headers.add("content-type", "application/json");
         exchange.sendResponseHeaders(200, response.getBytes().length);

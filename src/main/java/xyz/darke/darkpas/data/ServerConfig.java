@@ -19,6 +19,8 @@ public class ServerConfig {
     private int attenuationCoefficient;         // Rate at which volume drops off (after safe-zone)
     private int safeZoneSize;                   // Range where players broadcast at full volume
 
+    private int refreshRate;                    // Polling rate for new positional data
+
     private boolean unregisteredCanBroadcast;   // If players aren't registered, do they get heard
 
     public ServerConfig () {
@@ -95,16 +97,32 @@ public class ServerConfig {
         return safeZoneSize;
     }
 
-    public void setCutoffDistance(int cutoffDistance) {
+    public int getRefreshRate() {
+        return refreshRate;
+    }
+
+    public boolean setCutoffDistance(int cutoffDistance) {
+        if (cutoffDistance < 1) {
+            return false;
+        }
         this.cutoffDistance = cutoffDistance;
+        return true;
     }
 
-    public void setAttenuationCoefficient(int attenuationCoefficient) {
+    public boolean setAttenuationCoefficient(int attenuationCoefficient) {
+        if (cutoffDistance < 1) {
+            return false;
+        }
         this.attenuationCoefficient = attenuationCoefficient;
+        return true;
     }
 
-    public void setSafeZoneSize(int safeZoneSize) {
+    public boolean setSafeZoneSize(int safeZoneSize) {
+        if (cutoffDistance < 0) {
+            return false;
+        }
         this.safeZoneSize = safeZoneSize;
+        return true;
     }
 
     public boolean isUnregisteredCanBroadcast() {
@@ -113,6 +131,16 @@ public class ServerConfig {
 
     public void setUnregisteredCanBroadcast(boolean unregisteredCanBroadcast) {
         this.unregisteredCanBroadcast = unregisteredCanBroadcast;
+    }
+
+    public boolean setRefreshRate(int refreshRate) {
+        if (cutoffDistance < 1) {
+            return false;
+        } else if (cutoffDistance > 32) {
+            return false;
+        }
+        this.refreshRate = refreshRate;
+        return true;
     }
 
 }

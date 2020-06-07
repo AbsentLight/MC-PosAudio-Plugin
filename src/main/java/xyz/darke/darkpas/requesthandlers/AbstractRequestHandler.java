@@ -9,12 +9,6 @@ import java.util.Map;
 
 public abstract class AbstractRequestHandler implements HttpHandler {
 
-    protected final DarkPAS main;
-
-    public AbstractRequestHandler(DarkPAS main) {
-        this.main = main;
-    }
-
     public static Map<String, String> parseQuery(String queryString) {
 
         Map<String, String> queryItems = new HashMap<>();
