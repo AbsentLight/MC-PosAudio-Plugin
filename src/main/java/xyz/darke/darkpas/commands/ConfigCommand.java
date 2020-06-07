@@ -11,6 +11,7 @@ import xyz.darke.darkpas.data.PlayerData;
 import xyz.darke.darkpas.data.ServerConfig;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class ConfigCommand implements TabExecutor {
 

@@ -1,5 +1,8 @@
 package xyz.darke.darkpas.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import xyz.darke.darkpas.DarkPAS;
@@ -27,18 +30,32 @@ public class ServerConfig {
         this.cutoffDistance = 64;
         this.attenuationCoefficient = 5;
         this.safeZoneSize = 16;
+        this.refreshRate = 15;
         this.unregisteredCanBroadcast = true;
 
         buildServerConfigFromDisk();
     }
 
     public String getConfigJson() {
-        return String.format("{\"cutoffDistance\":%d," +
-                             "\"attenuationCoefficient\":%d," +
-                             "\"safeZoneSize\":%d," +
-                             "\"unregisteredCanBroadcast\":%s}",
-                this.cutoffDistance, this.attenuationCoefficient, this.safeZoneSize,
-                this.unregisteredCanBroadcast ? "true" : "false");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        ObjectNode configParams = objectMapper.createObjectNode();
+        configParams.put("cutoffDistance", this.cutoffDistance);
+        configParams.put("attenuationCoefficient", this.attenuationCoefficient);
+        configParams.put("safeZoneSize", this.safeZoneSize);
+        configParams.put("refreshRate", this.refreshRate);
+        configParams.put("unregisteredCanBroadcast", this.unregisteredCanBroadcast ? "true" : "false");
+
+        String outString;
+        try {
+            outString = configParams.toString();
+        } catch (Exception e) {
+            DarkPAS.log(Level.SEVERE, "Failed to construct config JSON!");
+            outString = "{}";
+        }
+
+        return outString;
     }
 
     public void buildServerConfigFromDisk() {
@@ -67,6 +84,7 @@ public class ServerConfig {
             this.cutoffDistance = ((Double) configItems.get("cutoffDistance")).intValue();
             this.attenuationCoefficient = ((Double) configItems.get("attenuationCoefficient")).intValue();
             this.safeZoneSize = ((Double) configItems.get("safeZoneSize")).intValue();
+            this.refreshRate = ((Double) configItems.get("refreshRate")).intValue();
             this.unregisteredCanBroadcast = (boolean) configItems.get("unregisteredCanBroadcast");
         } catch (Exception e) {
             DarkPAS.log(Level.WARNING, "Failed to parse config data from disk");
@@ -134,9 +152,9 @@ public class ServerConfig {
     }
 
     public boolean setRefreshRate(int refreshRate) {
-        if (cutoffDistance < 1) {
+        if (refreshRate < 1) {
             return false;
-        } else if (cutoffDistance > 32) {
+        } else if (refreshRate > 32) {
             return false;
         }
         this.refreshRate = refreshRate;
